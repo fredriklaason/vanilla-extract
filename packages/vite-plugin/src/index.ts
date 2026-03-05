@@ -220,13 +220,19 @@ export function vanillaExtractPlugin({
         const identOption = getIdentOption();
 
         if (unstable_mode === 'transform') {
-          return transform({
+          const transformedCode = await transform({
             source: code,
             filePath: normalizePath(validId),
             rootPath: config.root,
             packageName,
             identOption,
           });
+
+          return {
+            code: transformedCode,
+            map: { mappings: '' },
+            moduleType: 'js',
+          } as any;
         }
 
         if (compiler) {
@@ -236,9 +242,10 @@ export function vanillaExtractPlugin({
             absoluteId,
             { outputCss: true },
           );
-          const result: TransformResult = {
+          const result: any = {
             code: source,
             map: { mappings: '' },
+            moduleType: 'js',
           };
 
           // We don't need to watch files or invalidate modules in build mode or during SSR
